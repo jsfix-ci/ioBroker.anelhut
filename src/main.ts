@@ -234,7 +234,10 @@ class Anelhut extends utils.Adapter {
 
 		this.log.info("Found: " + this.anelConfigDevices.length + " devices in configuration");
 		this.anelConfigDevices.forEach(async (d) => {
-			this.log.info("Found device in config:  " + d.DeviceName + " | " + d.DeviceIP);
+			this.log.info("Found device in config [DeviceName|DeviceIP|UdpRecievePort|UdpSendPort|Username]:  " + 
+				d.DeviceName + " | " + d.DeviceIP + " | " +
+				d.UDPRecievePort + " | " + d.UDPSendPort + " | " +
+				d.Username);
 
 
 			this.log.info("Encrypted password: " + d.Password); //remove me in production
