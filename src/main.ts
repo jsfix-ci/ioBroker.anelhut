@@ -235,7 +235,18 @@ class Anelhut extends utils.Adapter {
 		this.log.info("Found: " + this.anelConfigDevices.length + " devices in configuration");
 		this.anelConfigDevices.forEach(async (d) => {
 			this.log.info("Found device in config:  " + d.DeviceName + " | " + d.DeviceIP);
-			await this.initializeDevice(d);
+
+			// decrypt password
+			this.getForeignObject('system.config', (err, obj) => {
+				if (obj && obj.native && obj.native.secret) {
+					//noinspection JSUnresolvedVariable
+					d.Password = decrypt(obj.native.secret, d.Password);
+				} else {
+					//noinspection JSUnresolvedVariable
+					d.Password = decrypt('Zgfr56gFe87jJOM', d.Password);
+				}
+				await this.initializeDevice(d);
+			});
 		});
 
 		this.log.info("Adapter anelhut initialized");
@@ -327,22 +338,17 @@ class Anelhut extends utils.Adapter {
 		}
 	}
 
-	// If you need to accept messages in your adapter, uncomment the following block and the corresponding line in the constructor.
-	// /**
-	//  * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
-	//  * Using this method requires "common.messagebox" property to be set to true in io-package.json
-	//  */
-	// private onMessage(obj: ioBroker.Message): void {
-	// 	if (typeof obj === "object" && obj.message) {
-	// 		if (obj.command === "send") {
-	// 			// e.g. send email or pushover or whatever
-	// 			this.log.info("send command");
+	function decrypt(key, value) {
+		let result = '';
+		for (let i = 0; i < value.length; ++i) {
+			result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+		}
+		return result;
+	}
 
-	// 			// Send response in callback if required
-	// 			if (obj.callback) this.sendTo(obj.from, obj.command, "Message received", obj.callback);
-	// 		}
-	// 	}
-	// }
+
+
+
 }
 
 if (module.parent) {

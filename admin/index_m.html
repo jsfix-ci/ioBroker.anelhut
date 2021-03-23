@@ -16,9 +16,39 @@
 		<script type="text/javascript" src="words.js"></script>
 
 		<script type="text/javascript">
-			// This will be called by the admin adapter when the settings page loads
+
+
+			var secret;
 			var getAnelDevices = []; // For table "getAnelDevices"
+
+			function encrypt(key, value) {
+				var result = '';
+				for (var i = 0; i < value.length; ++i) {
+					result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+				}
+				return result;
+			}
+
+			function decrypt(key, value) {
+				var result = '';
+				for (var i = 0; i < value.length; ++i) {
+					result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+				}
+				return result;
+			}
+
+
+
+			// This will be called by the admin adapter when the settings page loads
 			function load(settings, onChange) {
+
+				//secret for encrypt/decrypt user/password
+				socket.emit('getObject', 'system.config', function (err, obj) {
+                secret = (obj.native ? obj.native.secret : '') || 'Zgfr56gFe87jJOM';
+                loadHelper(settings, onChange);
+           		});
+
+				/*
 				// example: select elements with id=key and class=value and insert value
 				if (!settings) return;
 				$(".value").each(function () {
@@ -35,22 +65,67 @@
 					}
 				});
 				getAnelDevices = settings.getAnelDevices || []; // For table "getAnelDevices"
+				*/
+
 				onChange(false);
+				
+
+				/*
 				values2table("getAnelDevices", getAnelDevices, onChange); // For table "getAnelDevices"
 				// reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
 				if (M) M.updateTextFields();
+				*/
 			}
+
+			// the function loadSettings has to exist ...
+        	 // the function loadSettings has to exist ...
+			function loadHelper(settings, onChange) {
+					// example: select elements with id=key and class=value and insert value
+					if (!settings) return;
+					if (settings.electricityPollingInterval === undefined) settings.electricityPollingInterval = 20;
+					$('.value').each(function () {
+						var $key = $(this);
+						var id = $key.attr('id');
+						if (id === 'client_secret') {
+							settings[id] = decrypt(secret, settings[id]);
+						}
+						if ($key.attr('type') === 'checkbox') {
+						// do not call onChange direct, because onChange could expect some arguments
+							$key.prop('checked', settings[id]).change(function() {
+								onChange();
+							});
+						} else {
+						// do not call onChange direct, because onChange could expect some arguments
+							$key.val(settings[id]).change(function() {
+								onChange();
+							}).keyup(function() {
+								onChange();
+							});
+						}
+					});
+				onChange(false);
+				// function Materialize.updateTextFields(); to reinitialize all the Materialize labels on the page if you are dynamically adding inputs.
+					M.updateTextFields();
+				}
+
+
+
 
 			// This will be called by the admin adapter when the user presses the save button
 			function save(callback) {
 				// example: select elements with class=value and build settings object
 				var obj = {};
-				$(".value").each(function () {
+				$('.value').each(function () {
 					var $this = $(this);
-					if ($this.attr("type") === "checkbox") {
-						obj[$this.attr("id")] = $this.prop("checked");
+					var id = $this.attr('id');
+					if ($this.attr('type') === 'checkbox') {
+						obj[id] = $this.prop('checked');
 					} else {
-						obj[$this.attr("id")] = $this.val();
+						var value = $this.val();
+						if (id === 'client_secret') {
+							value = encrypt(secret, value);
+						}
+						obj[id] = value;
 					}
 				});
 				obj.getAnelDevices = table2values("getAnelDevices");
@@ -119,7 +194,7 @@
 											UDPRecievePort (default: 77)
 										</th>
 										<th class="header translate" data-name="Username">Username</th>
-										<th class="header translate" data-name="Password">Password</th>
+										<th class="header translate" id="client_secret" data-name="Password">Password</th>
 										<th></th>
 										<th class="header" data-buttons="delete up down"></th>
 									</tr>
