@@ -236,6 +236,8 @@ class Anelhut extends utils.Adapter {
 		this.anelConfigDevices.forEach(async (d) => {
 			this.log.info("Found device in config:  " + d.DeviceName + " | " + d.DeviceIP);
 
+
+			this.log.info("Encrypted password: " + d.Password); //remove me in production
 			// decrypt password
 			this.getForeignObject('system.config', (err, obj) => {
 				if (obj && obj.native && obj.native.secret) {
@@ -245,6 +247,7 @@ class Anelhut extends utils.Adapter {
 					//noinspection JSUnresolvedVariable
 					d.Password = decrypt('Zgfr56gFe87jJOM', d.Password);
 				}
+				this.log.info("Decrypted password: " + d.Password); //remove me in production
 				await this.initializeDevice(d);
 			});
 		});
