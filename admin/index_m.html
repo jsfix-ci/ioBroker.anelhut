@@ -80,6 +80,9 @@
 			// the function loadSettings has to exist ...
         	 // the function loadSettings has to exist ...
 			function loadHelper(settings, onChange) {
+
+					values2table("getAnelDevices", getAnelDevices, onChange); // For table "getAnelDevices"
+
 					// example: select elements with id=key and class=value and insert value
 					if (!settings) return;
 					if (settings.electricityPollingInterval === undefined) settings.electricityPollingInterval = 20;
