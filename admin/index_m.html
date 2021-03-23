@@ -69,7 +69,7 @@
 
 				onChange(false);
 				
-
+				values2table("getAnelDevices", getAnelDevices, onChange); // For table "getAnelDevices"
 				/*
 				values2table("getAnelDevices", getAnelDevices, onChange); // For table "getAnelDevices"
 				// reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
@@ -80,9 +80,6 @@
 			// the function loadSettings has to exist ...
         	 // the function loadSettings has to exist ...
 			function loadHelper(settings, onChange) {
-
-					values2table("getAnelDevices", getAnelDevices, onChange); // For table "getAnelDevices"
-
 					// example: select elements with id=key and class=value and insert value
 					if (!settings) return;
 					if (settings.electricityPollingInterval === undefined) settings.electricityPollingInterval = 20;
