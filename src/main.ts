@@ -116,6 +116,10 @@ class Anelhut extends utils.Adapter {
 				await this.setDeviceProperties(deviceName, "Name", "string", relais.Name);
 				await this.setDeviceProperties(deviceName, "Status", "boolean", relais.Status, "switch");
 
+				await this.setDeviceProperties(deviceName, "BasePowerWatt", "number", undefined);
+				await this.setDeviceProperties(deviceName, "Duration", "number", undefined);
+				await this.setDeviceProperties(deviceName, "TotalPowerConsumptionWh", "number", undefined);
+
 				// // only subscribe on the first initialisation
 				// if (!device.RelaisChangeSubscription) {
 				// 	device.RelaisChangeSubscription = true;
@@ -197,7 +201,7 @@ class Anelhut extends utils.Adapter {
 	 * @param parentDeviceName: Name of the parent device
 	 * @param variableName: Name of the variable
 	 * @param dataType: "boolean, string, number"
-	 * @param value: Current Value
+	 * @param value: Current Value. If value is undefined it is not written
 	 */
 	private async setDeviceProperties(
 		parentDeviceName: string,
@@ -217,7 +221,9 @@ class Anelhut extends utils.Adapter {
 			},
 			native: {},
 		});
-		this.setState(parentDeviceName + "." + variableName, value, true);
+		if (value != undefined) {
+			this.setState(parentDeviceName + "." + variableName, value, true);
+		}
 	}
 
 	private anelConfigDevices!: Array<AnelHut>;
