@@ -35,10 +35,16 @@ export class Relais {
 	public RelaisNumber: number;
 	public Name: string;
 	public Status: number;
+	public BasePowerWatt: number = 0;
+	public TotalOnDurationSec: number = 0;
 	constructor(RelaisNumber: number, Name: string, Status: number) {
 		this.RelaisNumber = RelaisNumber;
 		this.Name = Name;
 		this.Status = Status;
+	}
+
+	public getTotalPowerConsumptionWh(): number {
+		return (this.BasePowerWatt * this.TotalOnDurationSec) / (60 * 60);
 	}
 }
 

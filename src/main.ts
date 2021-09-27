@@ -7,7 +7,7 @@
 // you need to create an adapter
 import * as utils from "@iobroker/adapter-core";
 import { AnelHutCommunication } from "./AnelHutCommunication";
-import { HutData } from "./HutData";
+import { HutData, Relais } from "./HutData";
 import { AnelHut } from "./lib/adapter-config";
 
 // Load your modules here, e.g.:
@@ -25,6 +25,8 @@ class Anelhut extends utils.Adapter {
 		// this.on("message", this.onMessage.bind(this));
 		this.on("unload", this.onUnload.bind(this));
 	}
+
+	private RelaisList: Array<Relais> = new Array<Relais>();
 
 	private async UpdateHutData(device: AnelHut, hutData: HutData): Promise<void> {
 		// general
@@ -117,8 +119,10 @@ class Anelhut extends utils.Adapter {
 				await this.setDeviceProperties(deviceName, "Status", "boolean", relais.Status, "switch");
 
 				await this.setDeviceProperties(deviceName, "BasePowerWatt", "number", undefined);
-				await this.setDeviceProperties(deviceName, "Duration", "number", undefined);
+				await this.setDeviceProperties(deviceName, "TotalOnDurationSec", "number", undefined);
 				await this.setDeviceProperties(deviceName, "TotalPowerConsumptionWh", "number", undefined);
+
+				//search in objects list for relais
 
 				// // only subscribe on the first initialisation
 				// if (!device.RelaisChangeSubscription) {
